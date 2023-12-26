@@ -1,6 +1,11 @@
 let timer;
 let seconds = 0; // 初期値は0秒
-let alertSetTimes = { 'alert1min': 60, 'alert5min': 300, 'alert10min': 600, 'alert15min': 900 }; // アラーム時間を秒で設定
+let alertSetTimes = { 
+    'alert1min': 60, 
+    'alert5min': 300, 
+    'alert10min': 600, 
+    'alert15min': 900 
+}; // アラーム時間を秒で設定
 
 document.getElementById('startButton').addEventListener('click', startTimer);
 document.getElementById('stopButton').addEventListener('click', stopTimer);
@@ -31,6 +36,7 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timer);
     timer = null;
+    resetAlerts(); // タイマーを停止したときにアラートをリセット
 }
 
 function resetTimer() {
@@ -71,10 +77,6 @@ function playSound(soundId) {
 }
 
 function setAlerts(minutes) {
-    // 全てのアラートを一旦リセット
-    for (let alert in alertSetTimes) {
-        document.getElementById(alert).checked = false;
-    }
     // 設定された時間に応じてアラートをセット
     for (let alert in alertSetTimes) {
         if (minutes * 60 >= alertSetTimes[alert]) {
@@ -84,6 +86,7 @@ function setAlerts(minutes) {
 }
 
 function resetAlerts() {
+    // すべてのアラートをオフにする
     for (let alert in alertSetTimes) {
         document.getElementById(alert).checked = false;
     }
