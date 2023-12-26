@@ -1,0 +1,22 @@
+/* カスタムスタイル */
+#timerDisplay {
+    /* タイマー表示のカスタムスタイル */
+}
+
+/* 中間アラームチェックボックスのカスタムスタイル */
+#alerts label {
+    display: block; /* チェックボックスを縦並びに表示 */
+    margin-bottom: 0.5rem; /* ボタン間の余白 */
+}
+
+/* チェックボックスラベルのカスタムスタイル */
+#alerts .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* スマートフォン画面での追加のカスタムスタイル */
+@media (max-width: 576px) {
+    /* スマートフォン向けの追加のスタイル */
+}
