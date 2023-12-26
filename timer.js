@@ -11,17 +11,21 @@ document.getElementById('setTimerButton').addEventListener('click', setTimer);
 updateDisplay();
 
 function startTimer() {
-    stopTimer(); // 既存のタイマーを停止（もしあれば）
-    timer = setInterval(() => {
-        if (seconds > 0) {
-            seconds--;
-            updateDisplay();
-            checkAlerts();
-        } else {
-            stopTimer();
-            playSound('finalAlertSound'); // 最終アラーム
-        }
-    }, 1000);
+    if (seconds > 0) { // タイマーがセットされていることを確認
+        stopTimer(); // 既存のタイマーを停止（もしあれば）
+        timer = setInterval(() => {
+            if (seconds > 0) {
+                seconds--;
+                updateDisplay();
+                checkAlerts();
+            } else {
+                stopTimer();
+                playSound('finalAlertSound'); // 最終アラーム
+            }
+        }, 1000);
+    } else {
+        console.log("タイマーはセットされていません。"); // ここにユーザー向けの警告を表示できます。
+    }
 }
 
 function stopTimer() {
