@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeAudioFiles() {
     document.querySelectorAll('audio').forEach(audio => {
-        audio.load();
+        audio.pause();
+        audio.currentTime = 0;
     });
 }
 
