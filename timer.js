@@ -1,30 +1,32 @@
 let timer;
 let seconds = 0; // 初期値は0秒
-let alertSetTimes = { 
-    'alert1min': 60, 
-    'alert5min': 300, 
-    'alert10min': 600, 
-    'alert15min': 900 
+let alertSetTimes = {
+    'alert1min': 60,
+    'alert5min': 300,
+    'alert10min': 600,
+    'alert15min': 900
 }; // アラーム時間を秒で設定
 
+// ページがロードされた時にタイマーの表示を更新
+document.addEventListener('DOMContentLoaded', updateDisplay);
+
 document.getElementById('startButton').addEventListener('click', startTimer);
-document.getElementById('stopButton').addEventListener('click', stopTimer);
+document.getElementById('stopButton').addEventListener('click', () => stopTimer(true));
 document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
-// ページがロードされた時にタイマーの表示を更新
-updateDisplay();
-
 function startTimer() {
     if (seconds > 0) { // タイマーがセットされていることを確認
-        stopTimer(); // 既存のタイマーを停止（もしあれば）
+        if (timer) {
+            stopTimer(false); // 既存のタイマーを停止（もしあれば）
+        }
         timer = setInterval(() => {
             if (seconds > 0) {
                 seconds--;
                 updateDisplay();
                 checkAlerts();
             } else {
-                stopTimer();
+                stopTimer(true);
                 playSound('finalAlertSound'); // 最終アラーム
             }
         }, 1000);
@@ -33,17 +35,18 @@ function startTimer() {
     }
 }
 
-function stopTimer() {
+function stopTimer(resetAlertsFlag) {
     clearInterval(timer);
     timer = null;
-    resetAlerts(); // タイマーを停止したときにアラートをリセット
+    if (resetAlertsFlag) {
+        resetAlerts(); // タイマーを停止したときにアラートをリセット
+    }
 }
 
 function resetTimer() {
-    stopTimer();
+    stopTimer(true);
     seconds = 0;
     updateDisplay();
-    resetAlerts();
 }
 
 function setTimer() {
@@ -79,9 +82,7 @@ function playSound(soundId) {
 function setAlerts(minutes) {
     // 設定された時間に応じてアラートをセット
     for (let alert in alertSetTimes) {
-        if (minutes * 60 >= alertSetTimes[alert]) {
-            document.getElementById(alert).checked = true;
-        }
+        document.getElementById(alert).checked = (minutes * 60 >= alertSetTimes[alert]);
     }
 }
 
