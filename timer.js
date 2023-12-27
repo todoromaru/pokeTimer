@@ -3,12 +3,10 @@ let seconds = 0;
 let isAudioUnlocked = false;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // タイマーの表示を初期化
     updateDisplay();
 
-    // 各ボタンのイベントリスナーを設定
     document.getElementById('startButton').addEventListener('click', startTimer);
-    document.getElementById('stopButton').addEventListener('click', stopTimer);
+    document.getElementById('stopButton').addEventListener('click', () => stopTimer(true));
     document.getElementById('resetButton').addEventListener('click', resetTimer);
     document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
@@ -26,25 +24,25 @@ function startTimer() {
                 updateDisplay();
                 checkAlerts();
             } else {
-                stopTimer();
+                stopTimer(true);
                 playSound('finalAlertSound');
             }
         }, 1000);
     }
 }
 
-function stopTimer() {
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
+function stopTimer(resetAlertsFlag) {
+    clearInterval(timer);
+    timer = null;
+    if (resetAlertsFlag) {
+        resetAlertChecks();
     }
 }
 
 function resetTimer() {
-    stopTimer();
+    stopTimer(true);
     seconds = 0;
     updateDisplay();
-    resetAlertChecks();
 }
 
 function setTimer() {
@@ -52,7 +50,7 @@ function setTimer() {
     if (!isNaN(minutes) && minutes > 0) {
         seconds = minutes * 60;
         updateDisplay();
-        setAlertChecks();
+        setAlertChecks(minutes);
     }
 }
 
@@ -63,12 +61,11 @@ function updateDisplay() {
 }
 
 function checkAlerts() {
-    ['15', '10', '5', '1'].forEach(number => {
-        let alertTime = number + 'min';
-        if (seconds === alertSetTimes[alertTime] && document.getElementById('alert' + alertTime).checked) {
-            playSound('alert' + alertTime + 'Sound');
+    for (let alert in alertSetTimes) {
+        if (seconds === alertSetTimes[alert] && document.getElementById(alert).checked) {
+            playSound(alert + 'Sound');
         }
-    });
+    }
 }
 
 function playSound(id) {
@@ -92,18 +89,17 @@ function unlockAudio() {
     }
 }
 
-function setAlertChecks() {
-    let minutes = seconds / 60;
-    ['15', '10', '5', '1'].forEach(number => {
-        let checkbox = document.getElementById('alert' + number + 'min');
-        checkbox.checked = minutes >= number;
-    });
+function setAlertChecks(minutes) {
+    // 設定された時間に応じてアラートをセット
+    for (let alert in alertSetTimes) {
+        document.getElementById(alert).checked = (minutes * 60 >= alertSetTimes[alert]);
+    }
 }
 
 function resetAlertChecks() {
-    ['15', '10', '5', '1'].forEach(number => {
-        document.getElementById('alert' + number + 'min').checked = false;
-    });
+    for (let alert in alertSetTimes) {
+        document.getElementById(alert).checked = false;
+    }
 }
 
 const alertSetTimes = {
