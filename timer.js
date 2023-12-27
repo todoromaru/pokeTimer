@@ -51,6 +51,7 @@ function setTimer() {
         seconds = minutes * 60;
         updateDisplay();
         setAlertChecks(minutes);
+        resetSounds(); // タイマー設定時にアラーム音をリセット
     }
 }
 
@@ -90,7 +91,6 @@ function unlockAudio() {
 }
 
 function setAlertChecks(minutes) {
-    // 設定された時間に応じてアラートをセット
     for (let alert in alertSetTimes) {
         document.getElementById(alert).checked = (minutes * 60 >= alertSetTimes[alert]);
     }
@@ -100,6 +100,13 @@ function resetAlertChecks() {
     for (let alert in alertSetTimes) {
         document.getElementById(alert).checked = false;
     }
+}
+
+function resetSounds() {
+    document.querySelectorAll('audio').forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+    });
 }
 
 const alertSetTimes = {

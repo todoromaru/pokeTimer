@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- タイマー表示部分 -->
     <div class="container pt-3">
+        <!-- タイマー表示部分 -->
         <div class="row mb-4">
             <div class="col">
                 <div id="timerDisplay" class="text-center display-4">00:00</div>
@@ -64,6 +64,15 @@
     <audio id="alert5minSound" src="alert5min.wav" preload="auto"></audio>
     <audio id="alert10minSound" src="alert10min.wav" preload="auto"></audio>
     <audio id="alert15minSound" src="alert15min.wav" preload="auto"></audio>
+
+    <!-- アプリのバージョン情報 -->
+    <div class="container">
+        <div class="row">
+            <div class="col text-center mt-4">
+                <small id="appVersion">Version 1.0.1</small>
+            </div>
+        </div>
+    </div>
 
     <script src="timer.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
