@@ -1,52 +1,50 @@
 let timer;
-let seconds = 0; // 初期値は0秒
-let alertSetTimes = {
-    'alert1min': 60,
-    'alert5min': 300,
-    'alert10min': 600,
-    'alert15min': 900
-}; // アラーム時間を秒で設定
+let seconds = 0;
+let isAudioUnlocked = false;
 
-// ページがロードされた時にタイマーの表示を更新
-document.addEventListener('DOMContentLoaded', updateDisplay);
+document.addEventListener('DOMContentLoaded', function() {
+    // タイマーの表示を初期化
+    updateDisplay();
 
-document.getElementById('startButton').addEventListener('click', startTimer);
-document.getElementById('stopButton').addEventListener('click', () => stopTimer(true));
-document.getElementById('resetButton').addEventListener('click', resetTimer);
-document.getElementById('setTimerButton').addEventListener('click', setTimer);
+    // 各ボタンのイベントリスナーを設定
+    document.getElementById('startButton').addEventListener('click', startTimer);
+    document.getElementById('stopButton').addEventListener('click', stopTimer);
+    document.getElementById('resetButton').addEventListener('click', resetTimer);
+    document.getElementById('setTimerButton').addEventListener('click', setTimer);
+
+    // オーディオをアンロックするイベントリスナーを設定
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', unlockAudio);
+    });
+});
 
 function startTimer() {
-    if (seconds > 0) { // タイマーがセットされていることを確認
-        if (timer) {
-            stopTimer(false); // 既存のタイマーを停止（もしあれば）
-        }
+    if (seconds > 0 && !timer) {
         timer = setInterval(() => {
             if (seconds > 0) {
                 seconds--;
                 updateDisplay();
                 checkAlerts();
             } else {
-                stopTimer(true);
-                playSound('finalAlertSound'); // 最終アラーム
+                stopTimer();
+                playSound('finalAlertSound');
             }
         }, 1000);
-    } else {
-        console.log("タイマーはセットされていません。"); // ここにユーザー向けの警告を表示できます。
     }
 }
 
-function stopTimer(resetAlertsFlag) {
-    clearInterval(timer);
-    timer = null;
-    if (resetAlertsFlag) {
-        resetAlerts(); // タイマーを停止したときにアラートをリセット
+function stopTimer() {
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
     }
 }
 
 function resetTimer() {
-    stopTimer(true);
+    stopTimer();
     seconds = 0;
     updateDisplay();
+    resetAlertChecks();
 }
 
 function setTimer() {
@@ -54,41 +52,63 @@ function setTimer() {
     if (!isNaN(minutes) && minutes > 0) {
         seconds = minutes * 60;
         updateDisplay();
-        setAlerts(minutes);
+        setAlertChecks();
     }
 }
 
 function updateDisplay() {
-    let minutes = Math.floor(seconds / 60);
-    let remainingSeconds = seconds % 60;
-    document.getElementById('timerDisplay').textContent = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    let mins = Math.floor(seconds / 60);
+    let secs = seconds % 60;
+    document.getElementById('timerDisplay').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
 function checkAlerts() {
-    for (let alert in alertSetTimes) {
-        if (seconds === alertSetTimes[alert] && document.getElementById(alert).checked) {
-            playSound(alert + 'Sound');
+    ['15', '10', '5', '1'].forEach(number => {
+        let alertTime = number + 'min';
+        if (seconds === alertSetTimes[alertTime] && document.getElementById('alert' + alertTime).checked) {
+            playSound('alert' + alertTime + 'Sound');
+        }
+    });
+}
+
+function playSound(id) {
+    if (isAudioUnlocked) {
+        let sound = document.getElementById(id);
+        if (sound) {
+            sound.play();
         }
     }
 }
 
-function playSound(soundId) {
-    const sound = document.getElementById(soundId);
-    if (sound) {
-        sound.play();
+function unlockAudio() {
+    if (!isAudioUnlocked) {
+        isAudioUnlocked = true;
+        document.querySelectorAll('audio').forEach(audio => {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(error => console.error('Audio unlock failed', error));
+        });
     }
 }
 
-function setAlerts(minutes) {
-    // 設定された時間に応じてアラートをセット
-    for (let alert in alertSetTimes) {
-        document.getElementById(alert).checked = (minutes * 60 >= alertSetTimes[alert]);
-    }
+function setAlertChecks() {
+    let minutes = seconds / 60;
+    ['15', '10', '5', '1'].forEach(number => {
+        let checkbox = document.getElementById('alert' + number + 'min');
+        checkbox.checked = minutes >= number;
+    });
 }
 
-function resetAlerts() {
-    // すべてのアラートをオフにする
-    for (let alert in alertSetTimes) {
-        document.getElementById(alert).checked = false;
-    }
+function resetAlertChecks() {
+    ['15', '10', '5', '1'].forEach(number => {
+        document.getElementById('alert' + number + 'min').checked = false;
+    });
 }
+
+const alertSetTimes = {
+    'alert15min': 15 * 60,
+    'alert10min': 10 * 60,
+    'alert5min': 5 * 60,
+    'alert1min': 1 * 60
+};

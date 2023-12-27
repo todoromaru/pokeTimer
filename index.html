@@ -2,67 +2,57 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>カスタマイズ可能なタイマー</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- タイマー表示部分 -->
     <div class="container pt-3">
-        <!-- タイマー表示部分 -->
-        <div class="row mb-3">
-            <div class="col-12">
+        <div class="row mb-4">
+            <div class="col">
                 <div id="timerDisplay" class="text-center display-4">00:00</div>
             </div>
         </div>
-        
+
         <!-- タイマー設定部分 -->
-        <div class="row mb-3">
-            <div class="col-12">
+        <div class="row mb-2">
+            <div class="col">
                 <input type="number" id="minutesInput" class="form-control form-control-lg text-center" placeholder="分" min="1" max="120">
             </div>
         </div>
-        
-        <!-- 設定ボタン部分 -->
-        <div class="row mb-3">
-            <div class="col-12">
+        <div class="row mb-4">
+            <div class="col">
                 <button id="setTimerButton" class="btn btn-primary btn-lg btn-block">タイマー設定</button>
             </div>
         </div>
-        
-        <!-- 中間アラーム部分 -->
-        <div id="alerts" class="row justify-content-center mb-3">
-            <div class="col-6 col-md-3">
-                <label class="btn btn-outline-secondary btn-lg btn-block mb-2">
-                    <input type="checkbox" id="alert1min"> 1分前
-                </label>
+
+        <!-- 中間アラーム設定部分 -->
+        <div class="row mb-2" id="alerts">
+            <div class="col-3">
+                <input type="checkbox" id="alert15min" class="alert-check" checked> 15分前
             </div>
-            <div class="col-6 col-md-3">
-                <label class="btn btn-outline-secondary btn-lg btn-block mb-2">
-                    <input type="checkbox" id="alert5min"> 5分前
-                </label>
+            <div class="col-3">
+                <input type="checkbox" id="alert10min" class="alert-check" checked> 10分前
             </div>
-            <div class="col-6 col-md-3">
-                <label class="btn btn-outline-secondary btn-lg btn-block mb-2">
-                    <input type="checkbox" id="alert10min"> 10分前
-                </label>
+            <div class="col-3">
+                <input type="checkbox" id="alert5min" class="alert-check" checked> 5分前
             </div>
-            <div class="col-6 col-md-3">
-                <label class="btn btn-outline-secondary btn-lg btn-block mb-2">
-                    <input type="checkbox" id="alert15min"> 15分前
-                </label>
+            <div class="col-3">
+                <input type="checkbox" id="alert1min" class="alert-check" checked> 1分前
             </div>
         </div>
-        
+
         <!-- スタート・ストップ・リセットボタン部分 -->
-        <div class="row">
-            <div class="col-4 mb-2">
+        <div class="row mb-4">
+            <div class="col-4">
                 <button id="startButton" class="btn btn-success btn-lg btn-block">スタート</button>
             </div>
-            <div class="col-4 mb-2">
+            <div class="col-4">
                 <button id="stopButton" class="btn btn-danger btn-lg btn-block">ストップ</button>
             </div>
-            <div class="col-4 mb-2">
+            <div class="col-4">
                 <button id="resetButton" class="btn btn-warning btn-lg btn-block">リセット</button>
             </div>
         </div>
