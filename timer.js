@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('resetButton').addEventListener('click', resetTimer);
     document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
-    // オーディオをアンロックするイベントリスナーを設定
     document.querySelectorAll('button').forEach(button => {
         button.addEventListener('click', unlockAudio);
     });
@@ -18,16 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function startTimer() {
     if (seconds > 0 && !timer) {
-        timer = setInterval(() => {
-            if (seconds > 0) {
-                seconds--;
-                updateDisplay();
-                checkAlerts();
-            } else {
-                stopTimer(true);
-                playSound('finalAlertSound');
-            }
-        }, 1000);
+        timer = setInterval(timerFunction, 1000);
+    }
+}
+
+function timerFunction() {
+    if (seconds > 0) {
+        seconds--;
+        updateDisplay();
+        checkAlerts();
+    } else {
+        stopTimer(true);
+        playSound('finalAlertSound');
     }
 }
 
@@ -51,7 +52,6 @@ function setTimer() {
         seconds = minutes * 60;
         updateDisplay();
         setAlertChecks(minutes);
-        resetSounds(); // タイマー設定時にアラーム音をリセット
     }
 }
 
@@ -100,13 +100,6 @@ function resetAlertChecks() {
     for (let alert in alertSetTimes) {
         document.getElementById(alert).checked = false;
     }
-}
-
-function resetSounds() {
-    document.querySelectorAll('audio').forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
-    });
 }
 
 const alertSetTimes = {
