@@ -1,5 +1,6 @@
 let timer;
 let seconds = 0; // 初期値は0秒
+let isAudioUnlocked = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     updateDisplay();
@@ -8,10 +9,32 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // 各ボタンにイベントリスナーを追加
-document.getElementById('startButton').addEventListener('click', startTimer);
+document.getElementById('startButton').addEventListener('click', function() {
+    if (!isAudioUnlocked) {
+        unlockAudio();
+    }
+    startTimer();
+});
 document.getElementById('stopButton').addEventListener('click', stopTimer);
 document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
+
+function unlockAudio() {
+    // オーディオを再生してすぐに停止することでアンロック
+    document.querySelectorAll('audio').forEach(audio => {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {});
+    });
+    isAudioUnlocked = true;
+}
+
+function initializeAudio() {
+    document.querySelectorAll('audio').forEach(audio => {
+        audio.load();
+    });
+}
 
 // タイマーの表示を更新する関数
 function updateDisplay() {
@@ -23,16 +46,18 @@ function updateDisplay() {
 // タイマーをスタートする関数
 function startTimer() {
     if (!timer) {
-        timer = setInterval(() => {
-            if (seconds > 0) {
-                seconds--;
-                updateDisplay();
-                checkAlerts();
-            } else {
-                stopTimer();
-                playSound('finalAlertSound');
-            }
-        }, 1000);
+        timer = setInterval(timerFunction, 1000);
+    }
+}
+
+function timerFunction() {
+    if (seconds > 0) {
+        seconds--;
+        updateDisplay();
+        checkAlerts();
+    } else {
+        stopTimer();
+        playSound('finalAlertSound');
     }
 }
 
@@ -77,8 +102,10 @@ function checkAlerts() {
 
 // タイマー終了時のアラームを鳴らす関数
 function playSound(soundId) {
-    const sound = document.getElementById(soundId);
-    sound.play();
+    if (isAudioUnlocked) {
+        const sound = document.getElementById(soundId);
+        sound.play();
+    }
 }
 
 // アラームのチェックボックスをリセットする関数
@@ -87,12 +114,4 @@ function resetAlertChecks() {
     document.getElementById('alert5min').checked = false;
     document.getElementById('alert10min').checked = false;
     document.getElementById('alert15min').checked = false;
-}
-
-// オーディオを初期化する関数
-function initializeAudio() {
-    document.querySelectorAll('audio').forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
-    });
 }
