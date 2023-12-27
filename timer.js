@@ -4,6 +4,7 @@ let isAudioUnlocked = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     updateDisplay();
+    resetAlertChecks(); // ページ読み込み時にアラームチェックボックスをリセット
 
     document.getElementById('startButton').addEventListener('click', startTimer);
     document.getElementById('stopButton').addEventListener('click', () => stopTimer(true));
@@ -44,6 +45,7 @@ function resetTimer() {
     stopTimer(true);
     seconds = 0;
     updateDisplay();
+    resetAlertChecks();
 }
 
 function setTimer() {
