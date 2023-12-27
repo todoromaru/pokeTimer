@@ -20,7 +20,6 @@ document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
 function unlockAudio() {
-    // オーディオを再生してすぐに停止することでアンロック
     document.querySelectorAll('audio').forEach(audio => {
         audio.play().then(() => {
             audio.pause();
@@ -36,14 +35,12 @@ function initializeAudio() {
     });
 }
 
-// タイマーの表示を更新する関数
 function updateDisplay() {
-    let minutes = Math.floor(seconds / 60);
-    let remainingSeconds = seconds % 60;
-    document.getElementById('timerDisplay').textContent = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    let mins = Math.floor(seconds / 60);
+    let secs = seconds % 60;
+    document.getElementById('timerDisplay').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-// タイマーをスタートする関数
 function startTimer() {
     if (!timer) {
         timer = setInterval(timerFunction, 1000);
@@ -61,13 +58,11 @@ function timerFunction() {
     }
 }
 
-// タイマーをストップする関数
 function stopTimer() {
     clearInterval(timer);
     timer = null;
 }
 
-// タイマーをリセットする関数
 function resetTimer() {
     stopTimer();
     seconds = 0;
@@ -75,16 +70,22 @@ function resetTimer() {
     resetAlertChecks();
 }
 
-// タイマーを設定する関数
 function setTimer() {
     let minutes = parseInt(document.getElementById('minutesInput').value);
     if (!isNaN(minutes) && minutes > 0) {
         seconds = minutes * 60;
         updateDisplay();
+        setAlertChecks(minutes); // 中間アラームチェックボックスを自動で設定
     }
 }
 
-// 中間アラートをチェックする関数
+function setAlertChecks(minutes) {
+    document.getElementById('alert1min').checked = minutes >= 1;
+    document.getElementById('alert5min').checked = minutes >= 5;
+    document.getElementById('alert10min').checked = minutes >= 10;
+    document.getElementById('alert15min').checked = minutes >= 15;
+}
+
 function checkAlerts() {
     if (document.getElementById('alert1min').checked && seconds === 60) {
         playSound('alert1minSound');
@@ -100,7 +101,6 @@ function checkAlerts() {
     }
 }
 
-// タイマー終了時のアラームを鳴らす関数
 function playSound(soundId) {
     if (isAudioUnlocked) {
         const sound = document.getElementById(soundId);
@@ -108,7 +108,6 @@ function playSound(soundId) {
     }
 }
 
-// アラームのチェックボックスをリセットする関数
 function resetAlertChecks() {
     document.getElementById('alert1min').checked = false;
     document.getElementById('alert5min').checked = false;
