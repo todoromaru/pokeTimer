@@ -14,7 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('button').forEach(button => {
         button.addEventListener('click', unlockAudio);
     });
+
+    initializeAudioFiles(); // オーディオファイルを初期化
 });
+
+function initializeAudioFiles() {
+    document.querySelectorAll('audio').forEach(audio => {
+        audio.load();
+    });
+}
 
 function startTimer() {
     if (seconds > 0 && !timer) {
