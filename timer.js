@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 各ボタンにイベントリスナーを追加
 document.getElementById('startButton').addEventListener('click', function() {
-    if (!isAudioUnlocked) {
-        unlockAudio();
+    if (seconds > 0) { // タイマーが0以上であることを確認
+        if (!isAudioUnlocked) {
+            unlockAudio();
+        }
+        startTimer();
     }
-    startTimer();
 });
 document.getElementById('stopButton').addEventListener('click', stopTimer);
 document.getElementById('resetButton').addEventListener('click', resetTimer);
