@@ -6,14 +6,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDisplay();
     resetAlertChecks(); // ページ読み込み時にアラームチェックボックスをリセット
     initializeAudio(); // オーディオを初期化
+    // ページ読み込み時にオーディオのアンロックを試みる
+    document.addEventListener('click', unlockAudioOnce, { once: true });
 });
 
 // 各ボタンにイベントリスナーを追加
 document.getElementById('startButton').addEventListener('click', function() {
     if (seconds > 0) { // タイマーが0以上であることを確認
-        if (!isAudioUnlocked) {
-            unlockAudio();
-        }
         startTimer();
     }
 });
@@ -21,24 +20,43 @@ document.getElementById('stopButton').addEventListener('click', stopTimer);
 document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
+function unlockAudioOnce() {
+    if (!isAudioUnlocked) {
+        unlockAudio();
+    }
+}
+
 function unlockAudio() {
-    // 各オーディオ要素に対して、再生を試みてアンロックする
+    // iPhoneのブラウザでのオーディオ再生を許可するため、
+    // ユーザーのジェスチャ内で再生を試みる
     const audioElements = document.querySelectorAll('audio');
+    let unlockedCount = 0;
+    
     audioElements.forEach(audio => {
         audio.muted = true;
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.muted = false;
+                unlockedCount++;
+            }).catch(error => {
+                audio.muted = false;
+                unlockedCount++;
+            });
+        } else {
             audio.muted = false;
-        }).catch(() => {
-            audio.muted = false;
-        });
+            unlockedCount++;
+        }
     });
+    
     isAudioUnlocked = true;
 }
 
 function initializeAudio() {
     document.querySelectorAll('audio').forEach(audio => {
+        audio.preload = 'auto';
         audio.load();
     });
 }
@@ -50,6 +68,11 @@ function updateDisplay() {
 }
 
 function startTimer() {
+    // スタート時にオーディオをアンロック
+    if (!isAudioUnlocked) {
+        unlockAudio();
+    }
+    
     if (!timer) {
         timer = setInterval(timerFunction, 1000);
     }
@@ -110,10 +133,15 @@ function checkAlerts() {
 }
 
 function playSound(soundId) {
-    if (isAudioUnlocked) {
-        const sound = document.getElementById(soundId);
+    const sound = document.getElementById(soundId);
+    if (sound) {
         sound.currentTime = 0;
-        sound.play();
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('オーディオ再生エラー:', error);
+            });
+        }
     }
 }
 
