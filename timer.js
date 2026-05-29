@@ -22,14 +22,19 @@ document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
 function unlockAudio() {
-    // 音声ファイルを完全に再生する代わりに、各要素に対して短い再生を試みるだけ
-    const dummyAudio = new Audio();
-    dummyAudio.play().then(() => {
-        isAudioUnlocked = true;
-    }).catch(() => {
-        // ユーザー操作がない場合はオーディオ再生は許可されない
-        isAudioUnlocked = true;
+    // 各オーディオ要素に対して、再生を試みてアンロックする
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+        audio.muted = true;
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+        }).catch(() => {
+            audio.muted = false;
+        });
     });
+    isAudioUnlocked = true;
 }
 
 function initializeAudio() {
@@ -107,6 +112,7 @@ function checkAlerts() {
 function playSound(soundId) {
     if (isAudioUnlocked) {
         const sound = document.getElementById(soundId);
+        sound.currentTime = 0;
         sound.play();
     }
 }
