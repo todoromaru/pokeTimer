@@ -22,13 +22,14 @@ document.getElementById('resetButton').addEventListener('click', resetTimer);
 document.getElementById('setTimerButton').addEventListener('click', setTimer);
 
 function unlockAudio() {
-    document.querySelectorAll('audio').forEach(audio => {
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(() => {});
+    // 音声ファイルを完全に再生する代わりに、各要素に対して短い再生を試みるだけ
+    const dummyAudio = new Audio();
+    dummyAudio.play().then(() => {
+        isAudioUnlocked = true;
+    }).catch(() => {
+        // ユーザー操作がない場合はオーディオ再生は許可されない
+        isAudioUnlocked = true;
     });
-    isAudioUnlocked = true;
 }
 
 function initializeAudio() {
